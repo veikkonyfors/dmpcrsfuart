@@ -1,0 +1,2 @@
+#define rduart_VERSION_MAJOR @rduart_VERSION_MAJOR@
+#define rduart_VERSION_MINOR @rduart_VERSION_MINOR@
