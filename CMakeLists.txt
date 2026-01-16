@@ -6,7 +6,7 @@ project (rduart
 	DESCRIPTION "Read CRSF messages from UART, for testing purposes")
 
 # This project will output an executable file
-add_executable(${PROJECT_NAME} rduart.c)
+add_executable(${PROJECT_NAME} dmpcrsfuart.c)
 
 # Create a simple configuration header
 configure_file(config.h.in config.h)
