@@ -10,6 +10,7 @@
 #include <signal.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "crsf.h"
 #include "uart.h"
@@ -23,12 +24,42 @@ static void signal_handler(int sig) {
     running = false;
 }
 
+/**
+ * @file dmpcrsfuart.c
+ *
+ * Created on: Jan 6, 2026
+ * Author: pappa
+ *
+ * @brief command line program to dump crsf messages read from given UART port.
+ * @param -t UART port read crsf messages from (default /tmp/ttyV1).
+ * @param -b Baudrate (default 420000).
+ * @return 0.
+ * @note To be run on RPI connected to drone's FC UART.
+ * @note Never ending loop to be terminated with SIGINT or SIGKILL.
+ * @note Receiver accepts UDP connection from any IP address.
+ */
 int main(int argc, char *argv[]) {
-	const char *uart_port = "/tmp/ttyV1";
+
+	const char *tty = "/tmp/ttyV1";
     int baudrate = 420000;
+    int opt;
+
+	while ((opt = getopt(argc, argv, "t:b:")) != -1) {
+		switch (opt) {
+			case 't':
+				tty = optarg;
+				break;
+			case 'b':
+				baudrate = atoi(optarg);
+				break;
+			default:
+				fprintf(stderr, "Usage: %s [-t UART] [-b baudrate] \n", argv[0]);
+				exit(EXIT_FAILURE);
+		}
+	}
 
     printf("CRSF UART reader\n");
-    printf("UART port: %s\n", uart_port);
+    printf("UART port: %s\n", tty);
     printf("Baud rate: %d\n", baudrate);
     printf("Press Ctrl+C to stop\n\n");
 
@@ -37,7 +68,7 @@ int main(int argc, char *argv[]) {
     signal(SIGTERM, signal_handler);
 
 
-    if (uart_init(uart_port, baudrate) != 0) {
+    if (uart_init(tty, baudrate) != 0) {
         fprintf(stderr, "UART init failed\n");
         return 1;
     }
